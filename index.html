@@ -57,15 +57,20 @@
     /* Header */
     .chat-header {
       background: var(--navy-900);
-      padding: 16px 24px 14px;
       flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top toolbar strip */
+    .chat-header-bar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 16px;
+      padding: 9px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      gap: 12px;
     }
-
-    .chat-header-left { flex: 1; min-width: 0; }
 
     .scenario-label {
       font-size: 10px;
@@ -73,21 +78,27 @@
       letter-spacing: 0.13em;
       text-transform: uppercase;
       color: var(--navy-200);
-      margin-bottom: 4px;
-      opacity: 0.75;
+      opacity: 0.6;
     }
 
-    .chat-header h1 {
+    /* Title / identity area */
+    .chat-header-body {
+      padding: 14px 20px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .chat-header-body h1 {
       font-size: 17px;
       font-weight: 800;
       color: #fff;
       line-height: 1.25;
     }
 
-    .chat-header p {
+    .chat-header-body p {
       font-size: 12px;
       color: var(--navy-200);
-      margin-top: 3px;
       line-height: 1.55;
       opacity: 0.8;
     }
@@ -96,14 +107,15 @@
       display: inline-flex;
       align-items: center;
       gap: 7px;
-      margin-top: 10px;
+      align-self: flex-start;
+      margin-top: 4px;
       padding: 4px 12px;
-      background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
       border-radius: 20px;
       font-size: 11px;
       font-weight: 600;
-      color: #fff;
+      color: rgba(255,255,255,0.85);
     }
 
     .live-dot {
@@ -119,38 +131,35 @@
       50%       { box-shadow: 0 0 0 5px rgba(74,222,128,0); }
     }
 
-    /* Header action buttons */
+    /* Header action buttons — icon only */
     .header-actions {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 4px;
       flex-shrink: 0;
     }
 
     .hdr-btn {
       display: flex;
       align-items: center;
-      gap: 6px;
-      padding: 7px 13px;
-      border-radius: 8px;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 7px;
       font-family: var(--font);
-      font-size: 12px;
-      font-weight: 600;
       cursor: pointer;
-      transition: all 0.15s;
-      white-space: nowrap;
+      transition: background 0.15s, color 0.15s;
       border: 1px solid transparent;
+      color: rgba(255,255,255,0.55);
+      background: transparent;
+      text-decoration: none;
+      flex-shrink: 0;
     }
 
-    .hdr-btn.hints {
-      background: rgba(255,255,255,0.08);
-      border-color: rgba(255,255,255,0.18);
-      color: rgba(255,255,255,0.75);
-    }
-
-    .hdr-btn.hints:hover {
-      background: rgba(255,255,255,0.15);
+    .hdr-btn:hover {
+      background: rgba(255,255,255,0.1);
       color: #fff;
+      border-color: rgba(255,255,255,0.15);
     }
 
     .hdr-btn.hints.active {
@@ -159,32 +168,8 @@
       color: #fff;
     }
 
-    .hdr-btn.reset {
-      background: rgba(255,255,255,0.08);
-      border-color: rgba(255,255,255,0.18);
-      color: rgba(255,255,255,0.75);
-    }
-
-    .hdr-btn.reset:hover {
-      background: rgba(255,255,255,0.15);
-      color: #fff;
-    }
-
-    .hdr-btn.toggle {
-      background: rgba(255,255,255,0.08);
-      border-color: rgba(255,255,255,0.18);
-      color: rgba(255,255,255,0.75);
-    }
-
-    .hdr-btn.toggle:hover {
-      background: rgba(255,255,255,0.15);
-      color: #fff;
-    }
-
     .hdr-btn.toggle.panel-hidden {
-      background: rgba(255,255,255,0.08);
-      border-color: rgba(255,255,255,0.18);
-      color: rgba(255,255,255,0.45);
+      color: rgba(255,255,255,0.25);
     }
 
     /* Messages area */
@@ -590,6 +575,71 @@
       font-style: italic;
       min-height: 56px;
     }
+
+    /* ══════════════════════════════
+       MOBILE
+    ══════════════════════════════ */
+    @media (max-width: 700px) {
+      html, body { overflow: auto; }
+
+      body {
+        flex-direction: column;
+        height: auto;
+        min-height: 100vh;
+      }
+
+      .chat-panel {
+        height: 100vh;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .chat-header-bar {
+        padding: 8px 16px;
+      }
+
+      .chat-header-body {
+        padding: 12px 16px 14px;
+        gap: 4px;
+      }
+
+      .chat-header-body h1 { font-size: 15px; }
+      .chat-header-body p  { font-size: 11px; }
+
+      .messages {
+        padding: 16px 16px 8px;
+        gap: 14px;
+      }
+
+      .msg { max-width: 92%; }
+
+      .input-area {
+        padding: 10px 16px 16px;
+      }
+
+      /* Score panel becomes a bottom sheet on mobile */
+      .score-panel {
+        width: 100% !important;
+        border-left: none;
+        border-top: 2px solid var(--gray-200);
+        max-height: 60vh;
+        overflow-y: auto;
+        transition: max-height 0.35s cubic-bezier(0.4,0,0.2,1), opacity 0.25s ease;
+        flex-shrink: 0;
+      }
+
+      .score-panel.hidden {
+        max-height: 0;
+        opacity: 0;
+        pointer-events: none;
+        border-top-width: 0;
+      }
+
+      .score-number { font-size: 40px; }
+
+      .stage-name { font-size: 8px; }
+    }
   </style>
 </head>
 <body>
@@ -598,34 +648,38 @@
 <div class="chat-panel">
 
   <div class="chat-header">
-    <div class="chat-header-left">
-      <div class="scenario-label">Instructional Design Simulation</div>
+    <div class="chat-header-bar">
+      <span class="scenario-label">Instructional Design Simulation</span>
+      <div class="header-actions">
+        <button class="hdr-btn hints" id="hintsBtn" title="Hints" onclick="toggleHints()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+          </svg>
+        </button>
+        <button class="hdr-btn reset" title="Reset" onclick="resetSim()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.66"/>
+          </svg>
+        </button>
+        <a class="hdr-btn guide" title="Guide" href="guide.html" target="_blank" rel="noopener noreferrer">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+          </svg>
+        </a>
+        <button class="hdr-btn toggle" id="toggleBtn" title="Scorecard" onclick="togglePanel()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2"/><line x1="15" y1="3" x2="15" y2="21"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div class="chat-header-body">
       <h1>Stakeholder Needs Analysis</h1>
       <p>Apply Cathy Moore's Action Mapping — uncover the real performance problem before proposing any solution.</p>
       <div class="stakeholder-badge">
         <span class="live-dot"></span>
         Marcus Chen · VP of Sales · Meridian Solutions
       </div>
-    </div>
-    <div class="header-actions">
-      <button class="hdr-btn hints" id="hintsBtn" onclick="toggleHints()">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
-        </svg>
-        Hints
-      </button>
-      <button class="hdr-btn reset" onclick="resetSim()">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.66"/>
-        </svg>
-        Reset
-      </button>
-      <button class="hdr-btn toggle" id="toggleBtn" onclick="togglePanel()">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="3" width="18" height="18" rx="2"/><line x1="15" y1="3" x2="15" y2="21"/>
-        </svg>
-        Scorecard
-      </button>
     </div>
   </div>
 

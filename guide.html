@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Secure AI Integration Guide</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy-900: #0d1b3e;
+      --navy-800: #112257;
+      --navy-700: #1a3370;
+      --navy-600: #1e4080;
+      --navy-500: #2b5fad;
+      --navy-200: #c8d8f5;
+      --navy-100: #e8eef9;
+      --navy-50:  #f2f6fd;
+      --orange:   #f05a1a;
+      --orange-lt:#fff0e8;
+      --orange-md:#ffd4bb;
+      --white:    #ffffff;
+      --gray-50:  #f8f9fb;
+      --gray-100: #f0f2f6;
+      --gray-200: #e2e6ee;
+      --gray-300: #cdd3e0;
+      --gray-500: #8891a8;
+      --gray-700: #4a5470;
+      --text-1:   #1e2440;
+      --text-2:   #4a5470;
+      --text-3:   #8891a8;
+      --success-bg: #ecfdf5;
+      --success-border: #6ee7b7;
+      --success-text: #065f46;
+      --warn-bg:  #fffbeb;
+      --warn-border: #fcd34d;
+      --warn-text: #92400e;
+      --sidebar-w: 260px;
+      --header-h: 54px;
+      --font: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font);
+      background: var(--gray-50);
+      color: var(--text-1);
+      font-size: 14px;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Topbar ── */
+    .topbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: var(--header-h);
+      background: var(--navy-900);
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      gap: 10px;
+      z-index: 200;
+    }
+
+    .topbar-icon {
+      width: 32px; height: 32px;
+      background: var(--orange);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .topbar-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.01em;
+    }
+
+    .topbar-sub {
+      font-size: 12px;
+      color: var(--navy-200);
+      opacity: 0.7;
+      margin-left: 2px;
+    }
+
+    .topbar-badge {
+      margin-left: auto;
+      padding: 4px 10px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.8);
+    }
+
+    /* ── Layout ── */
+    .layout {
+      display: flex;
+      padding-top: var(--header-h);
+      min-height: 100vh;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: var(--sidebar-w);
+      flex-shrink: 0;
+      position: fixed;
+      top: var(--header-h);
+      left: 0; bottom: 0;
+      overflow-y: auto;
+      background: var(--white);
+      border-right: 1px solid var(--gray-200);
+      padding: 20px 0 40px;
+    }
+
+    .sidebar::-webkit-scrollbar { width: 3px; }
+    .sidebar::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 2px; }
+
+    .sidebar-group-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      padding: 16px 20px 6px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 20px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-2);
+      cursor: pointer;
+      border-left: 3px solid transparent;
+      transition: all 0.15s;
+      user-select: none;
+    }
+
+    .nav-item:hover { background: var(--gray-50); color: var(--text-1); }
+
+    .nav-item.active {
+      background: var(--navy-50);
+      color: var(--navy-700);
+      border-left-color: var(--orange);
+      font-weight: 700;
+    }
+
+    .nav-num {
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: var(--gray-200);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-3);
+      flex-shrink: 0;
+      transition: all 0.15s;
+    }
+
+    .nav-item.active .nav-num {
+      background: var(--orange);
+      color: white;
+    }
+
+    /* ── Main ── */
+    .main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      padding: 40px 48px 80px;
+      max-width: 860px;
+    }
+
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    /* ── Panel Header ── */
+    .panel-eyebrow {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 8px;
+    }
+
+    .panel-title {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--text-1);
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+      margin-bottom: 10px;
+    }
+
+    .panel-lead {
+      font-size: 15px;
+      color: var(--text-2);
+      line-height: 1.7;
+      margin-bottom: 32px;
+      max-width: 620px;
+    }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: 12px;
+      padding: 24px 28px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 4px rgba(30,36,64,0.05);
+    }
+
+    .section-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text-1);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--gray-100);
+    }
+
+    /* ── Callouts ── */
+    .callout {
+      padding: 14px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      line-height: 1.6;
+      margin: 14px 0;
+      border-left: 3px solid;
+    }
+
+    .callout-info {
+      background: var(--navy-50);
+      border-color: var(--navy-500);
+      color: var(--navy-700);
+    }
+
+    .callout-warn {
+      background: var(--warn-bg);
+      border-color: var(--warn-border);
+      color: var(--warn-text);
+    }
+
+    .callout-success {
+      background: var(--success-bg);
+      border-color: var(--success-border);
+      color: var(--success-text);
+    }
+
+    .callout-danger {
+      background: #fef2f2;
+      border-color: #fca5a5;
+      color: #991b1b;
+    }
+
+    /* ── Steps ── */
+    .steps {
+      list-style: none;
+      counter-reset: step;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 12px 0;
+    }
+
+    .steps li {
+      counter-increment: step;
+      display: flex;
+      gap: 12px;
+      font-size: 13.5px;
+      color: var(--text-2);
+      line-height: 1.6;
+      align-items: baseline;
+      flex-wrap: wrap;
+    }
+
+    .steps li > * { flex-shrink: 0; }
+    .steps li code { white-space: nowrap; }
+
+    .steps li::before {
+      content: counter(step);
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: var(--navy-900);
+      color: white;
+      font-size: 10px;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* ── Code ── */
+    pre {
+      background: var(--navy-900);
+      color: #e2e8f0;
+      border-radius: 10px;
+      padding: 18px 20px;
+      font-size: 13px;
+      line-height: 1.65;
+      overflow-x: auto;
+      margin: 14px 0;
+      font-family: 'Courier New', monospace;
+    }
+
+    code {
+      background: var(--gray-100);
+      color: var(--navy-700);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 12.5px;
+      font-family: 'Courier New', monospace;
+    }
+
+    pre code {
+      background: none;
+      color: inherit;
+      padding: 0;
+      border-radius: 0;
+      font-size: inherit;
+    }
+
+    .code-comment { color: #94a3b8; font-style: italic; }
+    .code-key     { color: #7dd3fc; }
+    .code-val     { color: #86efac; }
+    .code-str     { color: #fda4af; }
+
+    /* ── Table ── */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin: 12px 0;
+    }
+
+    .data-table th {
+      background: var(--navy-900);
+      color: var(--navy-200);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 10px 14px;
+      text-align: left;
+    }
+
+    .data-table td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--gray-100);
+      color: var(--text-2);
+      vertical-align: top;
+    }
+
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table tr:hover td { background: var(--gray-50); }
+
+    /* ── Diagram ── */
+    .diagram {
+      background: var(--navy-900);
+      border-radius: 12px;
+      padding: 24px;
+      margin: 16px 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      flex-wrap: wrap;
+    }
+
+    .diag-box {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 8px;
+      padding: 12px 18px;
+      text-align: center;
+    }
+
+    .diag-box-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--navy-200);
+      opacity: 1;
+      margin-bottom: 4px;
+    }
+
+    .diag-box-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: white;
+    }
+
+    .diag-box.highlight {
+      background: rgba(240,90,26,0.2);
+      border-color: rgba(240,90,26,0.5);
+    }
+
+    .diag-arrow {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 10px;
+      gap: 2px;
+    }
+
+    .diag-arrow-line {
+      width: 40px;
+      height: 2px;
+      background: rgba(255,255,255,0.45);
+    }
+
+    .diag-arrow-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.75);
+      white-space: nowrap;
+    }
+
+    /* ── Script boxes ── */
+    .script-box {
+      background: var(--orange-lt);
+      border: 1px solid var(--orange-md);
+      border-left: 3px solid var(--orange);
+      border-radius: 8px;
+      padding: 16px 18px;
+      margin: 12px 0;
+      font-size: 13.5px;
+      color: #7a3010;
+      line-height: 1.7;
+      font-style: italic;
+    }
+
+    .script-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 8px;
+      font-style: normal;
+    }
+
+    /* ── Inline tag ── */
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .tag-navy { background: var(--navy-100); color: var(--navy-700); }
+    .tag-orange { background: var(--orange-lt); color: var(--orange); }
+    .tag-green { background: var(--success-bg); color: var(--success-text); }
+
+    p + p { margin-top: 10px; }
+    p strong { color: var(--text-1); }
+
+    /* ── Mobile ── */
+    .mobile-nav-toggle {
+      display: none;
+      position: fixed;
+      bottom: 20px; right: 20px;
+      width: 46px; height: 46px;
+      border-radius: 50%;
+      background: var(--navy-900);
+      color: white;
+      border: none;
+      font-size: 18px;
+      cursor: pointer;
+      z-index: 300;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+    }
+
+    .sidebar.open { transform: translateX(0) !important; }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.25s ease;
+        z-index: 150;
+      }
+      .main { margin-left: 0; padding: 24px 20px 60px; }
+      .mobile-nav-toggle { display: flex; align-items: center; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Topbar -->
+<header class="topbar">
+  <div class="topbar-icon">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
+    </svg>
+  </div>
+  <div>
+    <div class="topbar-title">Secure AI Integration</div>
+    <div class="topbar-sub">A guide for Instructional Designers</div>
+  </div>
+  <div class="topbar-badge">Field Guide v1.0</div>
+</header>
+
+<div class="layout">
+
+  <!-- Sidebar -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-group-label">Overview</div>
+    <div class="nav-item active" data-panel="intro">
+      <span class="nav-num">→</span>
+      Why This Matters
+    </div>
+
+    <div class="sidebar-group-label">Setup</div>
+    <div class="nav-item" data-panel="phase1">
+      <span class="nav-num">1</span>
+      Accounts &amp; Tools
+    </div>
+    <div class="nav-item" data-panel="phase2">
+      <span class="nav-num">2</span>
+      Build the Backend
+    </div>
+    <div class="nav-item" data-panel="phase3">
+      <span class="nav-num">3</span>
+      Build the Frontend
+    </div>
+
+    <div class="sidebar-group-label">Deploy</div>
+    <div class="nav-item" data-panel="phase4">
+      <span class="nav-num">4</span>
+      Push to GitHub
+    </div>
+    <div class="nav-item" data-panel="phase5">
+      <span class="nav-num">5</span>
+      Deploy to Render
+    </div>
+    <div class="nav-item" data-panel="phase6">
+      <span class="nav-num">6</span>
+      GitHub Pages
+    </div>
+
+    <div class="sidebar-group-label">Reference</div>
+    <div class="nav-item" data-panel="cors">
+      <span class="nav-num">!</span>
+      CORS Explained
+    </div>
+    <div class="nav-item" data-panel="engineers">
+      <span class="nav-num">💬</span>
+      Talking to Engineers
+    </div>
+    <div class="nav-item" data-panel="files">
+      <span class="nav-num">📁</span>
+      File Reference
+    </div>
+  </nav>
+
+  <!-- Main -->
+  <main class="main">
+
+    <!-- ═══ INTRO ═══ -->
+    <section class="panel active" id="intro">
+      <div class="panel-eyebrow">Why This Matters</div>
+      <h1 class="panel-title">The Problem with Embedding API Keys</h1>
+      <p class="panel-lead">If you've ever built an AI-powered e-learning activity by pasting an API key directly into your HTML or JavaScript file, you've accidentally left the front door unlocked.</p>
+
+      <div class="card">
+        <div class="section-title">What is an API Key?</div>
+        <p>Think of an API key like a credit card number for a service. When you use a paid AI service like Grok or ChatGPT, you're given a key that authorizes you to use it — and gets billed for every request.</p>
+        <p>If someone finds your key, they can use the AI service <strong>on your bill</strong> — and you'd have no idea until you get a surprise invoice.</p>
+        <div class="callout callout-danger">
+          <strong>🚨 Never paste an API key directly into HTML, JavaScript, or any file that gets published to the web.</strong> It can be found by anyone who opens DevTools (right-click → Inspect) in their browser.
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">The Solution: A Middleman Server</div>
+        <p>The fix is to put your API key on a private server that <em>you</em> control. Your course or learning activity talks to your server, and your server talks to the AI. The key never reaches the learner's browser.</p>
+
+        <div class="diagram">
+          <div class="diag-box">
+            <div class="diag-box-label">Learner's Browser</div>
+            <div class="diag-box-name">Your Course / App</div>
+          </div>
+          <div class="diag-arrow">
+            <div class="diag-arrow-line"></div>
+            <div class="diag-arrow-label">sends message</div>
+          </div>
+          <div class="diag-box highlight">
+            <div class="diag-box-label">Your Server</div>
+            <div class="diag-box-name">API Key lives here 🔒</div>
+          </div>
+          <div class="diag-arrow">
+            <div class="diag-arrow-line"></div>
+            <div class="diag-arrow-label">forwards to AI</div>
+          </div>
+          <div class="diag-box">
+            <div class="diag-box-label">AI Service</div>
+            <div class="diag-box-name">Grok / ChatGPT</div>
+          </div>
+        </div>
+
+        <p>The learner only ever sees your server's response — never the key itself. It works exactly like ordering food at a restaurant. You (the learner) tell the waiter (your server) what you want. The waiter calls the kitchen (the AI). You get your food. You never needed the kitchen's private phone number.</p>
+      </div>
+
+      <div class="card">
+        <div class="section-title">What You'll Build</div>
+        <p>In this guide you'll set up a complete secure pipeline: a backend server hosted for free on Render, a frontend HTML file hosted on GitHub Pages, and a locked-down connection between the two.</p>
+        <div class="callout callout-info">
+          <strong>Cost:</strong> Everything in this guide is free. Render's free tier, GitHub Pages, and a Grok API key are all you need.
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ PHASE 1 ═══ -->
+    <section class="panel" id="phase1">
+      <div class="panel-eyebrow">Phase 1</div>
+      <h1 class="panel-title">Accounts &amp; Tools</h1>
+      <p class="panel-lead">Before writing a single line of code, get these four things in place. This is a one-time setup.</p>
+
+      <div class="card">
+        <div class="section-title">1. Install Node.js</div>
+        <p>Node.js is the engine that runs your backend server on your computer during development. Think of it as the runtime environment — like how you need a PDF reader to open PDFs, you need Node to run server-side JavaScript.</p>
+        <ol class="steps">
+          <li>Go to <strong>nodejs.org</strong> and download the LTS version (the left button).</li>
+          <li>Run the installer with all default settings. Leave the "Native Tools" checkbox unchecked.</li>
+          <li>Open a new PowerShell window and run <code>node -v</code> then <code>npm -v</code> — both should show version numbers.</li>
+        </ol>
+        <div class="callout callout-warn">
+          <strong>PowerShell tip:</strong> If <code>npm</code> gives a security error, run this once:<br>
+          <code>Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned</code>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">2. Create a GitHub Account</div>
+        <p>GitHub is where your code lives online. It also powers GitHub Pages — the free hosting for your frontend. If you already have an account, you're good.</p>
+        <p>Your GitHub username becomes part of your public URL: <code>https://yourusername.github.io</code></p>
+      </div>
+
+      <div class="card">
+        <div class="section-title">3. Create a Render Account</div>
+        <p>Render is where your backend server will live in the cloud — running 24/7 at a real URL. Sign up at <strong>render.com</strong> using your GitHub account so they're linked automatically.</p>
+        <div class="callout callout-info">
+          <strong>Free tier note:</strong> Render's free servers "spin down" after 15 minutes of inactivity. The first request after a sleep takes about 50 seconds. This is fine for prototypes and learning tools.
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">4. Get Your AI API Key</div>
+        <p>For this guide we used Grok (xAI). Get your key at <strong>console.x.ai</strong>. The same concept applies to any AI provider — OpenAI, Anthropic, Google, etc.</p>
+        <div class="callout callout-danger">
+          <strong>Treat this like a password.</strong> Never share it in chat, email, or any file that gets published. If it gets exposed, regenerate it immediately at your provider's console.
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ PHASE 2 ═══ -->
+    <section class="panel" id="phase2">
+      <div class="panel-eyebrow">Phase 2</div>
+      <h1 class="panel-title">Build the Backend</h1>
+      <p class="panel-lead">The backend is a tiny server with one job: receive messages from your course, forward them to the AI using your hidden key, and return the response.</p>
+
+      <div class="card">
+        <div class="section-title">Create Your Project Folder</div>
+        <p>In PowerShell, create a clean folder structure:</p>
+        <pre>cd C:\Users\YourName
+mkdir id-simulation
+cd id-simulation
+mkdir backend
+cd backend
+npm init -y</pre>
+        <p>The last command creates a <code>package.json</code> file — think of it as the ID card for your project.</p>
+      </div>
+
+      <div class="card">
+        <div class="section-title">Install Dependencies</div>
+        <p>Run this one command:</p>
+        <pre>npm install express cors dotenv</pre>
+        <table class="data-table">
+          <thead><tr><th>Package</th><th>What it does</th></tr></thead>
+          <tbody>
+            <tr><td><code>express</code></td><td>Creates the web server and defines your endpoint</td></tr>
+            <tr><td><code>cors</code></td><td>Controls which websites are allowed to talk to your server</td></tr>
+            <tr><td><code>dotenv</code></td><td>Reads your secret API key from the hidden <code>.env</code> file</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="section-title">Create Your .env File</div>
+        <p>Create a file named exactly <code>.env</code> in your backend folder. This is where your key lives locally:</p>
+        <pre>GROK_API_KEY=your_actual_api_key_here
+PORT=3000</pre>
+        <div class="callout callout-danger">
+          <strong>This file must NEVER be pushed to GitHub.</strong> Always add <code>.env</code> to your <code>.gitignore</code> before running <code>git add .</code>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">Create server.js</div>
+        <p>This is the actual backend file. It creates one endpoint — <code>/chat</code> — that your frontend will call:</p>
+        <pre><span class="code-comment">// Load environment variables from .env</span>
+require(<span class="code-str">'dotenv'</span>).config();
+const express = require(<span class="code-str">'express'</span>);
+const cors = require(<span class="code-str">'cors'</span>);
+
+const app = express();
+
+<span class="code-comment">// Only allow requests from your frontend URL</span>
+app.use(cors({ origin: <span class="code-str">'https://yourusername.github.io'</span> }));
+app.use(express.json());
+
+<span class="code-comment">// The /chat endpoint — this is what your frontend calls</span>
+app.post(<span class="code-str">'/chat'</span>, async (req, res) => {
+  const { messages } = req.body;
+  const response = await fetch(<span class="code-str">'https://api.x.ai/v1/chat/completions'</span>, {
+    method: <span class="code-str">'POST'</span>,
+    headers: {
+      <span class="code-key">'Content-Type'</span>: <span class="code-str">'application/json'</span>,
+      <span class="code-comment">// The key is read from .env — never hardcoded here</span>
+      <span class="code-key">'Authorization'</span>: <span class="code-str">`Bearer ${process.env.GROK_API_KEY}`</span>
+    },
+    body: JSON.stringify({ model: <span class="code-str">'grok-3-mini'</span>, messages })
+  });
+  const data = await response.json();
+  res.json(data);
+});
+
+app.listen(process.env.PORT || 3000, () =>
+  console.log(<span class="code-str">'Server running'</span>));</pre>
+      </div>
+
+      <div class="card">
+        <div class="section-title">Test Locally</div>
+        <p>Start your server:</p>
+        <pre>node server.js</pre>
+        <p>You should see <code>Server running</code> in the terminal. In a second PowerShell window, test it:</p>
+        <pre>Invoke-RestMethod -Uri "http://localhost:3000/chat" -Method POST -ContentType "application/json" -Body '{"messages":[{"role":"user","content":"say hello"}]}'</pre>
+        <p>If you get a response back from the AI, your backend works.</p>
+        <div class="callout callout-success">
+          <strong>✓ What just happened:</strong> Your PowerShell acted as a "fake browser" and called your local server. The server used your hidden API key to talk to Grok and returned the response. Your key never left your machine.
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ PHASE 3 ═══ -->
+    <section class="panel" id="phase3">
+      <div class="panel-eyebrow">Phase 3</div>
+      <h1 class="panel-title">Build the Frontend</h1>
+      <p class="panel-lead">The frontend is the part learners see and interact with — in our case, a chat interface. It's a single HTML file with no server required to run it.</p>
+
+      <div class="card">
+        <div class="section-title">Create the Frontend Folder</div>
+        <p>Inside your <code>id-simulation</code> folder (not inside backend), create a <code>frontend</code> folder and place your <code>index.html</code> there:</p>
+        <pre>id-simulation/
+├── backend/
+│   ├── .env          ← secret key (never on GitHub)
+│   ├── .gitignore
+│   ├── package.json
+│   └── server.js
+└── frontend/
+    └── index.html    ← your course/activity UI</pre>
+      </div>
+
+      <div class="card">
+        <div class="section-title">The Key Line in Your Frontend</div>
+        <p>Your <code>index.html</code> communicates with your backend through one line. During development it points to your local server:</p>
+        <pre><span class="code-comment">// During local development:</span>
+const API_URL = <span class="code-str">'http://localhost:3000/chat'</span>;</pre>
+        <p>After deploying, you update this to your live Render URL:</p>
+        <pre><span class="code-comment">// After deploying to Render:</span>
+const API_URL = <span class="code-str">'https://your-app-name.onrender.com/chat'</span>;</pre>
+        <p>That one line is the entire connection between frontend and backend. Everything else in your HTML file can be pure creative work.</p>
+      </div>
+
+      <div class="card">
+        <div class="section-title">How the Frontend Sends a Message</div>
+        <p>When a learner types a message and hits send, your JavaScript does this:</p>
+        <pre>const response = await fetch(API_URL, {
+  method: <span class="code-str">'POST'</span>,
+  headers: { <span class="code-key">'Content-Type'</span>: <span class="code-str">'application/json'</span> },
+  body: JSON.stringify({ messages: conversationHistory })
+});</pre>
+        <p>Notice: <strong>no API key anywhere in this code.</strong> The frontend only knows your server's URL — nothing about Grok or your credentials.</p>
+      </div>
+    </section>
+
+    <!-- ═══ PHASE 4 ═══ -->
+    <section class="panel" id="phase4">
+      <div class="panel-eyebrow">Phase 4</div>
+      <h1 class="panel-title">Push to GitHub</h1>
+      <p class="panel-lead">Before deploying to the cloud, your code needs to be on GitHub. This is also where the most common mistake happens — accidentally uploading your secret key.</p>
+
+      <div class="card">
+        <div class="section-title">⚠️ The Golden Rule: .gitignore First</div>
+        <p>Always — always — create your <code>.gitignore</code> file <em>before</em> running <code>git add .</code>. If you add files first, Git stages everything including your secrets.</p>
+        <p>Your <code>.gitignore</code> file should contain exactly these two lines:</p>
+        <pre>node_modules/
+.env</pre>
+        <div class="callout callout-warn">
+          <strong>The right order matters:</strong><br>
+          1. <code>git init</code><br>
+          2. Create <code>.gitignore</code> with the exclusions<br>
+          3. <code>git add .</code><br>
+          4. <code>git commit</code>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">Push the Backend</div>
+        <ol class="steps">
+          <li>Create a new empty repo on GitHub (no README, no license).</li>
+          <li>In your backend folder, initialize Git and commit your clean files.</li>
+          <li>Connect to GitHub and push.</li>
+        </ol>
+        <pre>git init
+git add .
+git status   <span class="code-comment"># verify — should only show .gitignore, package.json, server.js</span>
+git commit -m "initial backend commit"
+git remote add origin https://github.com/yourusername/your-repo.git
+git branch -M main
+git push -u origin main</pre>
+        <div class="callout callout-success">
+          <strong>✓ Verify on GitHub:</strong> Open your repo and confirm you only see <code>.gitignore</code>, <code>package-lock.json</code>, <code>package.json</code>, and <code>server.js</code>. If <code>.env</code> or <code>node_modules/</code> appear, something went wrong.
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">What if .env Gets Committed by Accident?</div>
+        <p>GitHub will block your push and warn you. If this happens:</p>
+        <ol class="steps">
+          <li>Immediately regenerate your API key at your provider's console. The old one is compromised.</li>
+          <li>Remove Git's history: <code>Remove-Item -Recurse -Force .git</code></li>
+          <li>Manually unstage the problem files: <code>git rm -r --cached node_modules</code> and <code>git rm --cached .env</code></li>
+          <li>Re-initialize, re-add, and push cleanly.</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ═══ PHASE 5 ═══ -->
+    <section class="panel" id="phase5">
+      <div class="panel-eyebrow">Phase 5</div>
+      <h1 class="panel-title">Deploy to Render</h1>
+      <p class="panel-lead">Render takes your GitHub repo and turns it into a live, running server in the cloud. This is where your API key lives online — stored securely as an environment variable, not in any file.</p>
+
+      <div class="card">
+        <div class="section-title">Create a Web Service</div>
+        <ol class="steps">
+          <li>Log in to <strong>render.com</strong> and click <strong>New → Web Service</strong>.</li>
+          <li>Connect your GitHub repo (<code>id-simulation-backend</code>).</li>
+          <li>Fill in the settings below and click <strong>Deploy Web Service</strong>.</li>
+        </ol>
+        <table class="data-table" style="margin-top:16px;">
+          <thead><tr><th>Field</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Language</td><td>Node</td></tr>
+            <tr><td>Branch</td><td>main</td></tr>
+            <tr><td>Build Command</td><td><code>npm install</code></td></tr>
+            <tr><td>Start Command</td><td><code>node server.js</code></td></tr>
+            <tr><td>Instance Type</td><td>Free</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="section-title">Add the Environment Variable</div>
+        <p>This is the online version of your <code>.env</code> file. Scroll to the <strong>Environment Variables</strong> section before clicking Deploy:</p>
+        <table class="data-table">
+          <thead><tr><th>Key</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td><code>GROK_API_KEY</code></td><td>your actual API key</td></tr>
+          </tbody>
+        </table>
+        <div class="callout callout-info">
+          Render stores this securely on their servers. It never appears in your code or your GitHub repo. Your <code>server.js</code> reads it the same way it reads your local <code>.env</code> — via <code>process.env.GROK_API_KEY</code>.
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">Confirm It's Live</div>
+        <p>Watch the deploy logs. When you see <code>Server running</code>, your backend is live at a URL like:</p>
+        <pre>https://id-simulation-backend.onrender.com</pre>
+        <p>Your <code>/chat</code> endpoint is now reachable at:</p>
+        <pre>https://id-simulation-backend.onrender.com/chat</pre>
+        <p>Update the <code>API_URL</code> constant in your <code>index.html</code> to this URL.</p>
+      </div>
+    </section>
+
+    <!-- ═══ PHASE 6 ═══ -->
+    <section class="panel" id="phase6">
+      <div class="panel-eyebrow">Phase 6</div>
+      <h1 class="panel-title">Deploy Frontend to GitHub Pages</h1>
+      <p class="panel-lead">GitHub Pages hosts your HTML file for free at a public URL. No server needed — it serves the file directly to anyone who visits the link.</p>
+
+      <div class="card">
+        <div class="section-title">Create a Frontend Repo and Push</div>
+        <ol class="steps">
+          <li>Create a new empty repo on GitHub named <code>id-simulation</code>.</li>
+          <li>In your frontend folder, initialize Git and push <code>index.html</code>.</li>
+        </ol>
+        <pre>cd C:\Users\YourName\id-simulation\frontend
+git init
+git add .
+git commit -m "initial frontend commit"
+git remote add origin https://github.com/yourusername/id-simulation.git
+git branch -M main
+git push -u origin main</pre>
+      </div>
+
+      <div class="card">
+        <div class="section-title">Enable GitHub Pages</div>
+        <ol class="steps">
+          <li>Go to your repo on GitHub.</li>
+          <li>Click <strong>Settings → Pages</strong> in the left sidebar.</li>
+          <li>Under Source, select <strong>Deploy from a branch</strong>.</li>
+          <li>Set Branch to <strong>main</strong>, folder to <strong>/ (root)</strong>.</li>
+          <li>Click <strong>Save</strong>. Wait 1–2 minutes.</li>
+        </ol>
+        <p>Your site will be live at:</p>
+        <pre>https://yourusername.github.io/id-simulation</pre>
+        <div class="callout callout-success">
+          <strong>✓ You're done!</strong> Open that URL in any browser — the simulation is live, the backend is secure, and your API key is hidden.
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">Updating Your Files Later</div>
+        <p>Whenever you make changes to <code>index.html</code> or <code>server.js</code>, push the updated file to GitHub. Render and GitHub Pages both auto-deploy on every push to <code>main</code>.</p>
+        <pre><span class="code-comment"># To update the frontend:</span>
+cd frontend
+git add index.html
+git commit -m "update simulation UI"
+git push
+
+<span class="code-comment"># To update the backend:</span>
+cd backend
+git add server.js
+git commit -m "update CORS or endpoint logic"
+git push</pre>
+      </div>
+    </section>
+
+    <!-- ═══ CORS ═══ -->
+    <section class="panel" id="cors">
+      <div class="panel-eyebrow">Reference</div>
+      <h1 class="panel-title">CORS Explained</h1>
+      <p class="panel-lead">CORS — Cross-Origin Resource Sharing — is a browser security rule that controls which websites are allowed to talk to your server. It's the lock on the door.</p>
+
+      <div class="card">
+        <div class="section-title">What is an "Origin"?</div>
+        <p>An origin is a combination of a protocol, domain, and port. These are all different origins:</p>
+        <pre>https://kevlovesdev.github.io       ← your GitHub Pages site
+https://example.com                 ← different domain
+http://localhost:3000               ← local development
+https://rise.com                    ← an LMS</pre>
+        <p>When your browser-based course tries to call your backend, the browser checks: "Is this origin allowed?" If not, the request is blocked before it even leaves the browser.</p>
+      </div>
+
+      <div class="card">
+        <div class="section-title">How to Set CORS in Your Server</div>
+        <p><strong>Open (anyone can call your server — not recommended for production):</strong></p>
+        <pre>app.use(cors()); <span class="code-comment">// No restrictions</span></pre>
+
+        <p><strong>Single origin (recommended — one specific URL only):</strong></p>
+        <pre>app.use(cors({ origin: <span class="code-str">'https://kevlovesdev.github.io'</span> }));</pre>
+
+        <p><strong>Multiple origins (if you embed in multiple places):</strong></p>
+        <pre>app.use(cors({
+  origin: [
+    <span class="code-str">'https://kevlovesdev.github.io'</span>,
+    <span class="code-str">'https://app.rise.com'</span>,
+    <span class="code-str">'https://yourschool.instructure.com'</span>
+  ]
+}));</pre>
+      </div>
+
+      <div class="card">
+        <div class="section-title">How Broad Can a CORS URL Be?</div>
+        <p>This is an important question. Here's the short answer: <strong>CORS matches the origin only — not paths, subfolders, or parameters.</strong></p>
+
+        <table class="data-table">
+          <thead><tr><th>What you put in CORS</th><th>What it allows</th><th>Good idea?</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><code>https://rise.com</code></td>
+              <td>Any page on rise.com — including other people's courses</td>
+              <td>❌ Too broad</td>
+            </tr>
+            <tr>
+              <td><code>https://app.rise.com</code></td>
+              <td>Any page on the Rise app subdomain</td>
+              <td>⚠️ Use with caution</td>
+            </tr>
+            <tr>
+              <td><code>https://kevlovesdev.github.io</code></td>
+              <td>Only pages hosted on your personal GitHub Pages</td>
+              <td>✅ Recommended</td>
+            </tr>
+            <tr>
+              <td><code>https://yourschool.instructure.com</code></td>
+              <td>Your specific Canvas instance only</td>
+              <td>✅ Fine for org use</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-warn">
+          <strong>Important:</strong> CORS is a browser-level protection only. It stops browsers from making unauthorized requests, but a developer with technical tools can still bypass it. CORS is about reducing accidental misuse — it's one layer of security, not a complete wall. Always pair it with rate limiting and key rotation for anything in production.
+        </div>
+
+        <p>You cannot restrict to a specific subfolder path. <code>https://rise.com/courses/my-specific-course</code> is NOT valid as a CORS origin — the path portion is ignored. If you're hosting inside an LMS, the best approach is to host your frontend on your own GitHub Pages and embed it via an iframe.</p>
+      </div>
+    </section>
+
+    <!-- ═══ ENGINEERS ═══ -->
+    <section class="panel" id="engineers">
+      <div class="panel-eyebrow">Reference</div>
+      <h1 class="panel-title">Talking to Software Engineers</h1>
+      <p class="panel-lead">If you're working with a dev team instead of building this yourself, here's how to communicate what you need clearly and professionally.</p>
+
+      <div class="card">
+        <div class="section-title">The Vocabulary You Now Know</div>
+        <table class="data-table">
+          <thead><tr><th>Term</th><th>Plain English</th></tr></thead>
+          <tbody>
+            <tr><td><strong>API endpoint</strong></td><td>A specific URL your app sends messages to. Like a dedicated phone line for one purpose.</td></tr>
+            <tr><td><strong>Environment variable</strong></td><td>A secret stored on the server, not in the code. Like a password written on a sticky note that only the server can see.</td></tr>
+            <tr><td><strong>CORS</strong></td><td>A rule that says which websites are allowed to talk to the backend.</td></tr>
+            <tr><td><strong>Backend / server</strong></td><td>Code that runs in the cloud, not in the browser. Handles secrets and data.</td></tr>
+            <tr><td><strong>Frontend / client</strong></td><td>The HTML/JS the learner sees in their browser.</td></tr>
+            <tr><td><strong>POST request</strong></td><td>A message your frontend sends to the backend containing data (like a chat message).</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="section-title">Script: Requesting a New AI Endpoint</div>
+        <p>Use this when you want to add an AI-powered interaction to a course and need the dev team to set up the backend:</p>
+        <div class="script-box">
+          <div class="script-label">📋 What to say</div>
+          "Hi [name], I'm building an AI-powered scenario for a course and I need a backend endpoint to keep the API key secure. Specifically, I need a <strong>POST endpoint</strong> — something like <code>/chat</code> — that accepts an array of messages in the standard OpenAI message format and returns the AI's response. The API key for [Grok/OpenAI/etc.] should be stored as an <strong>environment variable</strong> on the server, not in any code. I'll be calling it from a frontend hosted at [your URL], so CORS should be configured to allow requests from that origin only. Happy to share the frontend code so you can see exactly what format I'll be sending."
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">Script: Requesting a CORS Update</div>
+        <p>Use this when you've moved your course to a new platform and the AI calls are getting blocked:</p>
+        <div class="script-box">
+          <div class="script-label">📋 What to say</div>
+          "The AI interaction in [course name] is no longer working because we moved the course to [new platform/URL]. The backend's CORS policy is blocking requests from the new origin. Could you add <code>[new URL]</code> to the allowed origins list in the server's CORS configuration? The current allowed origin is <code>[old URL]</code> — you can either replace it or add the new one alongside it if both need to work."
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">Script: Reporting a Broken Endpoint</div>
+        <div class="script-box">
+          <div class="script-label">📋 What to say</div>
+          "The AI interaction in [course name] stopped responding as of [date/time]. Learners are seeing [describe the error or behavior]. The frontend is at [URL] and it's trying to reach the <code>/chat</code> endpoint at [backend URL]. I haven't changed anything on the frontend side. Could you check the server logs and confirm whether the issue is on the backend? I can also share browser console screenshots if that helps."
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">Script: Asking for a New API Key to Be Added</div>
+        <div class="script-box">
+          <div class="script-label">📋 What to say</div>
+          "I have a new API key for [service] that needs to replace the existing one on the server. I'll send it to you securely — please store it as an environment variable named <code>GROK_API_KEY</code> (or whatever naming convention you use) and <strong>do not commit it to the repo</strong>. Once it's updated on Render/your hosting platform, the old key can be deactivated."
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">What to Include in Any Request</div>
+        <p>When you reach out to an engineer about a backend issue, always include:</p>
+        <ol class="steps">
+          <li><strong>The frontend URL</strong> — where the course lives</li>
+          <li><strong>The backend URL</strong> — the endpoint being called</li>
+          <li><strong>What you expected to happen</strong> vs. what actually happened</li>
+          <li><strong>When it started</strong> — did it ever work, or is it new?</li>
+          <li><strong>Any error messages</strong> from the browser console (right-click → Inspect → Console tab)</li>
+        </ol>
+        <div class="callout callout-info">
+          <strong>Pro tip:</strong> Open your browser's DevTools (F12), go to the <strong>Network</strong> tab, and trigger the AI interaction. You'll see the actual request and response — including any error codes. Sharing a screenshot of this with an engineer will save everyone a lot of back-and-forth.
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ FILES ═══ -->
+    <section class="panel" id="files">
+      <div class="panel-eyebrow">Reference</div>
+      <h1 class="panel-title">File Reference</h1>
+      <p class="panel-lead">A quick reference for every file in your project — what it does, whether you write it, and whether it should ever go on GitHub.</p>
+
+      <div class="card">
+        <div class="section-title">Backend Files</div>
+        <table class="data-table">
+          <thead><tr><th>File</th><th>You wrote it?</th><th>Goes to GitHub?</th><th>What it does</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><code>server.js</code></td>
+              <td><span class="tag tag-green">Yes</span></td>
+              <td><span class="tag tag-green">Yes</span></td>
+              <td>Your actual server. Creates the <code>/chat</code> endpoint. This is the brain.</td>
+            </tr>
+            <tr>
+              <td><code>.env</code></td>
+              <td><span class="tag tag-green">Yes</span></td>
+              <td><span class="tag tag-orange">Never</span></td>
+              <td>Stores your API key locally. Render has its own version via Environment Variables.</td>
+            </tr>
+            <tr>
+              <td><code>.gitignore</code></td>
+              <td><span class="tag tag-green">Yes</span></td>
+              <td><span class="tag tag-green">Yes</span></td>
+              <td>Tells Git to ignore <code>.env</code> and <code>node_modules/</code>.</td>
+            </tr>
+            <tr>
+              <td><code>package.json</code></td>
+              <td><span class="tag tag-navy">Auto-generated</span></td>
+              <td><span class="tag tag-green">Yes</span></td>
+              <td>Lists your project's dependencies. Render reads this to install packages.</td>
+            </tr>
+            <tr>
+              <td><code>package-lock.json</code></td>
+              <td><span class="tag tag-navy">Auto-generated</span></td>
+              <td><span class="tag tag-green">Yes</span></td>
+              <td>Locks exact package versions. Don't touch this manually.</td>
+            </tr>
+            <tr>
+              <td><code>node_modules/</code></td>
+              <td><span class="tag tag-navy">Auto-generated</span></td>
+              <td><span class="tag tag-orange">Never</span></td>
+              <td>Downloaded package code. Huge folder, always regenerated via <code>npm install</code>.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="section-title">Frontend Files</div>
+        <table class="data-table">
+          <thead><tr><th>File</th><th>You wrote it?</th><th>Goes to GitHub?</th><th>What it does</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><code>index.html</code></td>
+              <td><span class="tag tag-green">Yes</span></td>
+              <td><span class="tag tag-green">Yes</span></td>
+              <td>Your entire course UI. Contains HTML, CSS, and JavaScript in one file.</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="callout callout-info" style="margin-top:16px;">
+          <strong>Safe to publish:</strong> Your <code>index.html</code> contains no secrets. It only knows your backend's public URL — not the API key. Anyone can read your frontend code without gaining access to the AI service.
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">The Complete Picture</div>
+        <div class="diagram" style="flex-direction:column; gap:16px; align-items:flex-start;">
+          <div style="display:flex; align-items:center; gap:12px; width:100%;">
+            <div class="diag-box" style="min-width:180px;">
+              <div class="diag-box-label">GitHub Repo 1</div>
+              <div class="diag-box-name">id-simulation-backend</div>
+            </div>
+            <div style="color:rgba(255,255,255,0.5); font-size:13px;">→ auto-deploys to →</div>
+            <div class="diag-box highlight" style="min-width:180px;">
+              <div class="diag-box-label">Render.com</div>
+              <div class="diag-box-name">Live Backend Server 🔒</div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:center; gap:12px; width:100%;">
+            <div class="diag-box" style="min-width:180px;">
+              <div class="diag-box-label">GitHub Repo 2</div>
+              <div class="diag-box-name">id-simulation</div>
+            </div>
+            <div style="color:rgba(255,255,255,0.5); font-size:13px;">→ auto-deploys to →</div>
+            <div class="diag-box" style="min-width:180px;">
+              <div class="diag-box-label">GitHub Pages</div>
+              <div class="diag-box-name">Live Frontend URL</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<button class="mobile-nav-toggle" id="mobileNavToggle">☰</button>
+
+<script>
+  const navItems = document.querySelectorAll('.nav-item');
+  const panels   = document.querySelectorAll('.panel');
+
+  navItems.forEach(item => {
+    item.addEventListener('click', () => {
+      const target = item.dataset.panel;
+      navItems.forEach(n => n.classList.remove('active'));
+      panels.forEach(p => p.classList.remove('active'));
+      item.classList.add('active');
+      document.getElementById(target).classList.add('active');
+      document.getElementById('sidebar').classList.remove('open');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+
+  document.getElementById('mobileNavToggle').addEventListener('click', () => {
+    document.getElementById('sidebar').classList.toggle('open');
+  });
+
+  document.addEventListener('click', e => {
+    const sidebar = document.getElementById('sidebar');
+    const toggle  = document.getElementById('mobileNavToggle');
+    if (sidebar.classList.contains('open') &&
+        !sidebar.contains(e.target) &&
+        !toggle.contains(e.target)) {
+      sidebar.classList.remove('open');
+    }
+  });
+</script>
+</body>
+</html>
