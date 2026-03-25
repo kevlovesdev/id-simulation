@@ -750,6 +750,12 @@
     </div>
 
     <div class="criterion">
+      <div class="crit-header"><span class="crit-name">Target Audience</span><span class="crit-pts" id="pts-targetAudience">0 / 15</span></div>
+      <div class="crit-desc">Identify who specifically has the performance gap</div>
+      <div class="crit-bar-outer"><div class="crit-bar-fill" id="bar-targetAudience"></div></div>
+    </div>
+
+    <div class="criterion">
       <div class="crit-header"><span class="crit-name">Key Behaviors</span><span class="crit-pts" id="pts-keyBehaviors">0 / 20</span></div>
       <div class="crit-desc">Identify what people need to DO differently on the job</div>
       <div class="crit-bar-outer"><div class="crit-bar-fill" id="bar-keyBehaviors"></div></div>
@@ -768,19 +774,7 @@
     </div>
 
     <div class="criterion">
-      <div class="crit-header"><span class="crit-name">Target Audience</span><span class="crit-pts" id="pts-targetAudience">0 / 10</span></div>
-      <div class="crit-desc">Identify who specifically has the performance gap</div>
-      <div class="crit-bar-outer"><div class="crit-bar-fill" id="bar-targetAudience"></div></div>
-    </div>
-
-    <div class="criterion">
-      <div class="crit-header"><span class="crit-name">No Info-Dump</span><span class="crit-pts" id="pts-avoidedInfoDump">0 / 10</span></div>
-      <div class="crit-desc">Avoid proposing a lecture, slide deck, or content-heavy course</div>
-      <div class="crit-bar-outer"><div class="crit-bar-fill" id="bar-avoidedInfoDump"></div></div>
-    </div>
-
-    <div class="criterion">
-      <div class="crit-header"><span class="crit-name">Behavior-Focused Solution</span><span class="crit-pts" id="pts-behaviorFocus">0 / 10</span></div>
+      <div class="crit-header"><span class="crit-name">Behavior-Focused Solution</span><span class="crit-pts" id="pts-behaviorFocus">0 / 15</span></div>
       <div class="crit-desc">Propose practice scenarios or job aids over knowledge delivery</div>
       <div class="crit-bar-outer"><div class="crit-bar-fill" id="bar-behaviorFocus"></div></div>
     </div>
@@ -813,9 +807,11 @@ CONVERSATION STAGE GUIDE:
 - Stage 2: If the ID asks about measurable goals or business metrics, reveal the deal closure numbers.
 - Stage 3: If asked what people need to do differently, reveal the discovery call behavior gap.
 - Stage 4: If asked WHY they're not doing discovery calls, reveal the CRM issue. After revealing it, insist you still want a training course built — "the CRM thing is IT's problem, but my team still needs the skills."
-- Stage 5: If the ID proposes behavior-focused solutions (scenarios, job aids, on-the-job practice), respond positively and agree to move forward. If they propose a lecture, webinar, or slide-heavy course, push back firmly: "I've sat through those. They don't work. What else do you have?"
+- Stage 5: Set stage to 5 the moment the ID proposes ANY solution or recommendation — whether it is a behavior-focused solution (scenarios, job aids, on-the-job practice) or a poor one (lecture, webinar, slide course). If the solution is behavior-focused, respond positively and agree to move forward. If they propose a lecture, webinar, or slide-heavy course, push back firmly: "I've sat through those. They don't work. What else do you have?" Also set stage to 5 if the total score is 80 or above, since the conversation has reached a mature point.
 
 CRITICAL: Return ONLY a raw JSON object — no preamble, no markdown, no code fences.
+
+WRITING STYLE: Never use em dashes (—) in Marcus's dialogue. Use a comma, period, or just a space instead. People don't type em dashes in real chat conversations.
 
 {
   "message": "your in-character dialogue as Marcus Chen",
@@ -824,9 +820,8 @@ CRITICAL: Return ONLY a raw JSON object — no preamble, no markdown, no code fe
     "keyBehaviors": <integer 0-20>,
     "rootCauses": <integer 0-15>,
     "questionedTraining": <integer 0-15>,
-    "targetAudience": <integer 0-10>,
-    "avoidedInfoDump": <integer 0-10>,
-    "behaviorFocus": <integer 0-10>
+    "targetAudience": <integer 0-15>,
+    "behaviorFocus": <integer 0-15>
   },
   "stage": <integer 1-5>,
   "feedback": "<one sharp coaching sentence: what the ID just did well or exactly what they should ask/say next>",
@@ -837,7 +832,7 @@ CRITICAL: Return ONLY a raw JSON object — no preamble, no markdown, no code fe
   ]
 }
 
-Scores are CUMULATIVE — only increase, never decrease. Award partial credit for close attempts. Be honest. The prompts should feel like natural ID responses — some probing, some pushing back, some proposing next steps.`;
+Scores are CUMULATIVE — only increase, never decrease. Award partial credit for close attempts. Be honest. Total possible is 100 (measurableGoal 20 + keyBehaviors 20 + rootCauses 15 + questionedTraining 15 + targetAudience 15 + behaviorFocus 15). The prompts should feel like natural ID responses — some probing, some pushing back, some proposing next steps.`;
 
   const OPENING_MESSAGE = "Look, I'll cut straight to it — my sales team isn't hitting their numbers. Q3 was rough. I've already put together a list of topics I want covered: objection handling, product knowledge, competitive positioning, closing techniques. I just need you to build the training. Can we get started on that?";
 
@@ -848,8 +843,8 @@ Scores are CUMULATIVE — only increase, never decrease. Award partial credit fo
   ];
 
   let messages = [];
-  let currentScores = { measurableGoal:0, keyBehaviors:0, rootCauses:0, questionedTraining:0, targetAudience:0, avoidedInfoDump:0, behaviorFocus:0 };
-  const maxScores =   { measurableGoal:20, keyBehaviors:20, rootCauses:15, questionedTraining:15, targetAudience:10, avoidedInfoDump:10, behaviorFocus:10 };
+  let currentScores = { measurableGoal:0, keyBehaviors:0, rootCauses:0, questionedTraining:0, targetAudience:0, behaviorFocus:0 };
+  const maxScores =   { measurableGoal:20, keyBehaviors:20, rootCauses:15, questionedTraining:15, targetAudience:15, behaviorFocus:15 };
   let currentStage = 1;
   let isWaiting = false;
   let panelVisible = true;
@@ -898,7 +893,7 @@ Scores are CUMULATIVE — only increase, never decrease. Award partial credit fo
   // ── RESET ──────────────────────────────────────────────
   function resetSim() {
     messages = [];
-    currentScores = { measurableGoal:0, keyBehaviors:0, rootCauses:0, questionedTraining:0, targetAudience:0, avoidedInfoDump:0, behaviorFocus:0 };
+    currentScores = { measurableGoal:0, keyBehaviors:0, rootCauses:0, questionedTraining:0, targetAudience:0, behaviorFocus:0 };
     currentStage = 1;
     isWaiting = false;
     hintsVisible = false;
@@ -990,11 +985,17 @@ Scores are CUMULATIVE — only increase, never decrease. Award partial credit fo
   function updateScores(incoming) {
     let total = 0;
     for (const key of Object.keys(currentScores)) {
-      if (incoming[key] !== undefined && incoming[key] > currentScores[key]) currentScores[key] = incoming[key];
+      if (incoming[key] !== undefined && incoming[key] > currentScores[key]) {
+        currentScores[key] = Math.min(incoming[key], maxScores[key]);
+      }
       total += currentScores[key];
     }
+    total = Math.min(total, 100);
     document.getElementById('totalScore').textContent = total;
     document.getElementById('totalBar').style.width = `${total}%`;
+
+    // Auto-advance to stage 5 when solution-related scores are awarded
+    if (currentStage < 5 && currentScores.behaviorFocus > 0) updateStage(5);
     for (const [key, val] of Object.entries(currentScores)) {
       const max = maxScores[key];
       const pct = (val / max) * 100;
@@ -1015,9 +1016,13 @@ Scores are CUMULATIVE — only increase, never decrease. Award partial credit fo
       const item = document.getElementById(`si-${i}`);
       dot.className = 'stage-dot';
       item.className = 'stage-item';
-      if (i < stage)      { dot.classList.add('done'); dot.textContent = '✓'; }
-      else if (i === stage){ dot.classList.add('active'); item.classList.add('current'); dot.textContent = i; }
-      else                  dot.textContent = i;
+      if (i < stage)       { dot.classList.add('done'); dot.textContent = '✓'; }
+      else if (i === stage) {
+        // Stage 5 is the final stage — mark it done immediately
+        if (stage === 5) { dot.classList.add('done'); dot.textContent = '✓'; item.classList.add('current'); }
+        else             { dot.classList.add('active'); item.classList.add('current'); dot.textContent = i; }
+      }
+      else dot.textContent = i;
     }
   }
 
@@ -1044,7 +1049,7 @@ Scores are CUMULATIVE — only increase, never decrease. Award partial credit fo
       { role: 'system', content: SYSTEM_PROMPT },
       { role: 'assistant', content: JSON.stringify({
           message: OPENING_MESSAGE,
-          scores: { measurableGoal:0, keyBehaviors:0, rootCauses:0, questionedTraining:0, targetAudience:0, avoidedInfoDump:0, behaviorFocus:0 },
+          scores: { measurableGoal:0, keyBehaviors:0, rootCauses:0, questionedTraining:0, targetAudience:0, behaviorFocus:0 },
           stage: 1, feedback: "", prompts: OPENING_PROMPTS
         })
       },
@@ -1066,8 +1071,8 @@ Scores are CUMULATIVE — only increase, never decrease. Award partial credit fo
 
       hideTyping();
       addMessage('ai', parsed.message, parsed.prompts || []);
-      if (parsed.scores)   updateScores(parsed.scores);
       if (parsed.stage)    updateStage(parsed.stage);
+      if (parsed.scores)   updateScores(parsed.scores);
       if (parsed.feedback) updateFeedback(parsed.feedback);
 
       messages.push({ role: 'assistant', content: aiRaw });
