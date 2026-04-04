@@ -1,0 +1,35 @@
+:root {
+  --navy-900: #0d1b3e;
+  --navy-800: #112257;
+  --navy-700: #1a3370;
+  --navy-600: #1e4080;
+  --navy-500: #2b5fad;
+  --navy-200: #c8d8f5;
+  --navy-100: #e8eef9;
+  --navy-50:  #f2f6fd;
+  --orange:   #f05a1a;
+  --orange-lt:#fff0e8;
+  --orange-md:#ffd4bb;
+  --white:    #ffffff;
+  --gray-50:  #f8f9fb;
+  --gray-100: #f0f2f6;
+  --gray-200: #e2e6ee;
+  --gray-300: #cdd3e0;
+  --gray-500: #8891a8;
+  --gray-700: #4a5470;
+  --gray-900: #1e2440;
+  --text-1:   #1e2440;
+  --text-2:   #4a5470;
+  --text-3:   #8891a8;
+  --font: 'Plus Jakarta Sans', sans-serif;
+
+  /* Guide-specific */
+  --success-bg: #ecfdf5;
+  --success-border: #6ee7b7;
+  --success-text: #065f46;
+  --warn-bg:  #fffbeb;
+  --warn-border: #fcd34d;
+  --warn-text: #92400e;
+  --sidebar-w: 260px;
+  --header-h: 54px;
+}
